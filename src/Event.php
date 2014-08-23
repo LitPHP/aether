@@ -8,9 +8,16 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  */
 class Event extends GenericEvent
 {
-    const NOT_FOUND = 'aether.not-found';
-    const ACCESS_DENY = 'aether.access-deny';
-    const INTERNAL_ERROR = 'aether.internal-error';
+    const NOT_FOUND = 'aether.event.not-found';
+    const ACCESS_DENY = 'aether.event.access-deny';
+    const INTERNAL_ERROR = 'aether.event.internal-error';
+
+    const BEFORE_DISPATCH = 'aether.event.before-dispatch';
+    const BEFORE_LOGIC = 'aether.event.before-logic';
+    const AFTER_LOGIC = 'aether.event.after-logic';
+    const BEFORE_OUTPUT = 'aether.event.before-output';
+    const BEFORE_END = 'aether.event.before-output';
+
     /**
      * @var App
      */

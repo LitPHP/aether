@@ -51,6 +51,7 @@ class App
         set_exception_handler(
             function (\Exception $exception) use ($context) {
                 $context->triggerEvent(Event::INTERNAL_ERROR, $exception);
+                $context->getApp()->output($context);
             }
         );
         set_error_handler(
@@ -59,11 +60,11 @@ class App
             }
         );
 
-        $obEnabled = $this->get(App::D_CONFIG_OB_CONTENT);
+        $context->triggerEvent(Event::BEFORE_DISPATCH);
 
         $routeInfo = $this->getRouter()->dispatch($context);
 
-        if ($obEnabled) {
+        if ($this->get(App::D_CONFIG_OB_CONTENT)) {
             ob_start();
         }
 
@@ -79,24 +80,16 @@ class App
                 $vars = $routeInfo[2];
 
                 if (!is_callable($handler)) {
-                    $context->triggerEvent(Event::INTERNAL_ERROR, new \Exception("route not callable"));
+                    throw new \Exception("route not callable");
                 } else {
+                    $context->triggerEvent(Event::BEFORE_LOGIC);
                     $handler($context, $vars);
+                    $context->triggerEvent(Event::AFTER_LOGIC);
                 }
                 break;
         }
 
-        if ($obEnabled) {
-            $content = ob_get_clean();
-            if (!empty($content)) {
-                $context->getResponse()->setContent($content);
-            }
-        }
-
-        $context->getResponse()->send();
-
-        restore_exception_handler();
-        restore_error_handler();
+        $this->output($context);
     }
 
     /**
@@ -133,5 +126,26 @@ class App
     public function getDependency()
     {
         return $this->dependency;
+    }
+
+    /**
+     * @param Context $context
+     */
+    protected function output(Context $context)
+    {
+        if ($this->get(App::D_CONFIG_OB_CONTENT)) {
+            $content = ob_get_clean();
+            if (!empty($content)) {
+                $context->getResponse()->setContent($content);
+            }
+        }
+
+        $context->triggerEvent(Event::BEFORE_OUTPUT);
+        $context->getResponse()->send();
+
+        restore_exception_handler();
+        restore_error_handler();
+
+        $context->triggerEvent(Event::BEFORE_END);
     }
 }
