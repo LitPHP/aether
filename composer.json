@@ -1,0 +1,12 @@
+{
+    "name": "litphp/aether",
+    "description": "dead simple framework which just works",
+    "license": "ISC",
+    "authors": [
+        {
+            "name": "McFog Wang",
+            "email": "mcfogw@gmail.com"
+        }
+    ],
+    "require": {}
+}
