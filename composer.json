@@ -8,5 +8,15 @@
             "email": "mcfogw@gmail.com"
         }
     ],
-    "require": {}
+    "autoload": {
+        "psr-4": {
+            "Aether\\": "src"
+        }
+    },
+    "require": {
+        "symfony/http-foundation": "~2.5.3",
+        "pimple/pimple": "~3.0",
+        "nikic/fast-route": "~0.2",
+        "symfony/event-dispatcher": "~2.5.3"
+    }
 }
