@@ -1,13 +1,20 @@
 <?php namespace Aether;
 
+use Aether\Factory\ContainerFactory;
 use FastRoute\Dispatcher;
 use Pimple\Container;
-use Pimple\ServiceProviderInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * User: mcfog
  * Date: 14-8-23
+ */
+
+/**
+ * represents the app.
+ * wraps a \Pimple\Container to maintain dependencies
+ *
+ * @package Aether
  */
 class App
 {
@@ -25,7 +32,7 @@ class App
     public function __construct(Container $dependency = null)
     {
         if (is_null($dependency)) {
-            $dependency = DependencyProvider::makeContainer();
+            $dependency = ContainerFactory::makeContainer();
         }
 
         $this->dependency = $dependency;
@@ -33,6 +40,12 @@ class App
         $this->dependency->offsetSet(self::D_APP, $this);
     }
 
+    /**
+     * create an app and run it
+     *
+     * @param Container $dependency
+     * @param Context $context
+     */
     public static function main(Container $dependency = null, Context $context = null)
     {
         /**
@@ -43,6 +56,12 @@ class App
         $app->run($context);
     }
 
+    /**
+     * run the app
+     *
+     * @param Context $context
+     * @throws \Exception
+     */
     public function run(Context $context = null)
     {
         if (is_null($context)) {
@@ -110,16 +129,15 @@ class App
         return $this->get(self::D_EVENT_DISPATCHER);
     }
 
+    /**
+     * get a dependency entry
+     *
+     * @param string $key
+     * @return mixed
+     */
     public function get($key)
     {
         return $this->dependency->offsetGet($key);
-    }
-
-    public function register(ServiceProviderInterface $provider, array $config = array())
-    {
-        $this->dependency->register($provider, $config);
-
-        return $this;
     }
 
     /**

@@ -1,7 +1,12 @@
-<?php namespace Aether;
+<?php namespace Aether\Factory;
 
+use Aether\App;
+use Aether\Event;
+use Aether\Router;
 use Aether\View\LayoutView;
 use Aether\View\TemplateView;
+use FastRoute\DataGenerator\GroupCountBased as GCBGenerator;
+use FastRoute\Dispatcher\GroupCountBased as GCBDispatcher;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std;
 use Pimple\Container;
@@ -13,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
  * User: mcfog
  * Date: 14-8-23
  */
-class DependencyProvider implements ServiceProviderInterface
+class ContainerFactory implements ServiceProviderInterface
 {
     public static function makeContainer(array $extra = array())
     {
@@ -111,12 +116,12 @@ class DependencyProvider implements ServiceProviderInterface
         };
 
         $pimple[Router::D_GENERATOR] = function () {
-            return new \FastRoute\DataGenerator\GroupCountBased();
+            return new GCBGenerator();
         };
 
         $pimple[Router::D_DISPATCHER_FACTORY] = $pimple->protect(
             function ($data) {
-                return new \FastRoute\Dispatcher\GroupCountBased($data);
+                return new GCBDispatcher($data);
             }
         );
     }

@@ -6,6 +6,12 @@ use Symfony\Component\EventDispatcher\GenericEvent;
  * User: mcfog
  * Date: 14-8-23
  */
+
+/**
+ * Class Event
+ * @package Aether
+ *
+ */
 class Event extends GenericEvent
 {
     const NOT_FOUND = 'aether.event.not-found';
@@ -27,6 +33,11 @@ class Event extends GenericEvent
      */
     protected $context;
 
+    /**
+     * @param Context $ctx
+     * @param mixed $subject
+     * @param array $arguments
+     */
     public function __construct(Context $ctx, $subject = null, array $arguments = array())
     {
         parent::__construct($subject, $arguments);

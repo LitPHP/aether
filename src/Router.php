@@ -8,6 +8,12 @@ use Pimple\Container;
  * User: mcfog
  * Date: 14-8-23
  */
+
+/**
+ * FastRoute wrapper
+ *
+ * @package Aether
+ */
 class Router
 {
     const D_COLLECTOR = 'aether.router.collector';

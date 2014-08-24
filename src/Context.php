@@ -8,6 +8,12 @@ use Symfony\Component\HttpFoundation\Response;
  * User: mcfog
  * Date: 14-8-23
  */
+
+/**
+ * runtime context include the Request, the Response and the App
+ *
+ * @package Aether
+ */
 class Context extends \ArrayObject
 {
     protected $app;

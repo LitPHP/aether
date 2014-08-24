@@ -29,6 +29,7 @@ class TemplateView extends AbstractView
     /**
      * @param $data
      * @param $template
+     * @throws \Exception
      * @return string
      */
     protected function renderTemplate($data, $template)
