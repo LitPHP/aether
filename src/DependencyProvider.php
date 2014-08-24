@@ -1,5 +1,7 @@
 <?php namespace Aether;
 
+use Aether\View\LayoutView;
+use Aether\View\TemplateView;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std;
 use Pimple\Container;
@@ -32,55 +34,69 @@ class DependencyProvider implements ServiceProviderInterface
     public function register(Container $pimple)
     {
         $pimple[App::D_CONFIG_OB_CONTENT] = true;
+        $pimple[App::D_ERROR_LEVEL] = E_ALL | E_STRICT;
 
         $pimple[App::D_EVENT_DISPATCHER] = function () {
-            $eventDispatcher = new EventDispatcher();
-            $eventDispatcher->addListener(
-                Event::ACCESS_DENY,
-                function (Event $event) {
-                    $event->getContext()->getResponse()
-                        ->setStatusCode(Response::HTTP_FORBIDDEN)
-                        ->setContent('access denied');
-
-                    $event->stopPropagation();
-                },
-                -0xFFFF
-            );
-
-            $eventDispatcher->addListener(
-                Event::NOT_FOUND,
-                function (Event $event) {
-                    $event->getContext()->getResponse()
-                        ->setStatusCode(Response::HTTP_NOT_FOUND)
-                        ->setContent('not found');
-
-                    $event->stopPropagation();
-                },
-                -0xFFFF
-            );
-
-            $eventDispatcher->addListener(
-                Event::INTERNAL_ERROR,
-                function (Event $event) {
-                    $event->getContext()->getResponse()
-                        ->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR)
-                        ->setContent('error');
-
-                    $event->stopPropagation();
-                },
-                -0xFFFF
-            );
-
-            return $eventDispatcher;
+            return new EventDispatcher();
         };
+        $this->addDefaultListener($pimple);
 
-        $this->register_router($pimple);
+        $pimple[TemplateView::D_TPL_EXTENSION] = '.phtml';
+        $pimple[LayoutView::D_LAYOUT_DEFAULT] = 'layout/default';
+
+        $this->registerRouter($pimple);
+    }
+
+    protected function addDefaultListener(Container $pimple)
+    {
+        $pimple->extend(
+            App::D_EVENT_DISPATCHER,
+            function (EventDispatcher $eventDispatcher) {
+                $eventDispatcher->addListener(
+                    Event::ACCESS_DENY,
+                    function (Event $event) {
+                        $event->getContext()->getResponse()
+                            ->setStatusCode(Response::HTTP_FORBIDDEN)
+                            ->setContent('access denied');
+
+                        $event->stopPropagation();
+                    },
+                    -0xFFFF
+                );
+
+                $eventDispatcher->addListener(
+                    Event::NOT_FOUND,
+                    function (Event $event) {
+                        $event->getContext()->getResponse()
+                            ->setStatusCode(Response::HTTP_NOT_FOUND)
+                            ->setContent('not found');
+
+                        $event->stopPropagation();
+                    },
+                    -0xFFFF
+                );
+
+                $eventDispatcher->addListener(
+                    Event::INTERNAL_ERROR,
+                    function (Event $event) {
+                        $event->getContext()->getResponse()
+                            ->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR)
+                            ->setContent('error');
+
+                        $event->stopPropagation();
+                    },
+                    -0xFFFF
+                );
+
+                return $eventDispatcher;
+            }
+        );
     }
 
     /**
      * @param Container $pimple
      */
-    protected function register_router(Container $pimple)
+    protected function registerRouter(Container $pimple)
     {
         $pimple[App::D_ROUTER] = function (Container $dep) {
             return new Router($dep);

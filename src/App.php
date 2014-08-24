@@ -15,6 +15,7 @@ class App
     const D_ROUTER = 'aether.router';
     const D_EVENT_DISPATCHER = 'aether.event-dispatcher';
     const D_CONFIG_OB_CONTENT = 'aether.config.ob-content';
+    const D_ERROR_LEVEL = 'aether.error_level';
 
     /**
      * @var Container
@@ -57,7 +58,8 @@ class App
         set_error_handler(
             function ($errno, $errstr, $errfile, $errline) {
                 throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
-            }
+            },
+            $this->get(self::D_ERROR_LEVEL)
         );
 
         $context->triggerEvent(Event::BEFORE_DISPATCH);
@@ -141,7 +143,10 @@ class App
         }
 
         $context->triggerEvent(Event::BEFORE_OUTPUT);
-        $context->getResponse()->send();
+
+        $context->getResponse()
+            ->prepare($context->getRequest())
+            ->send();
 
         restore_exception_handler();
         restore_error_handler();
